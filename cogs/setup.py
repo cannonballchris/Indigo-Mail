@@ -34,9 +34,12 @@ class Setup(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         setattr(self, "db", await aiosqlite.connect("./Database/setup.db"))
+        setattr(self, "threads", await aiosqlite.connect("./Database/threads.db"))
+        setattr(self, "users", await aiosqlite.connect("./Database/user.db"))
         await sleep(2)
         async with self.db.cursor() as cursor:
             await cursor.execute("CREATE TABLE IF NOT EXISTS setup(guild_id INTEGER, category_id INTEGER, log_channel INTEGER, enabled BOOL)")
+        
 
 
     @commands.slash_command(name = "setup", description = "⚙️ Setup modmail in your server!")
@@ -82,6 +85,16 @@ class Setup(commands.Cog):
             else:
                 await cursor.execute("DELETE FROM setup WHERE guild_id = ?", (ctx.guild.id,))
                 await self.db.commit()
+                async with self.threads.cursor() as cursor1:
+                    await cursor1.execute("SELECT * FROM threads WHERE guild_id = ?", (ctx.guild.id,))
+                    if await cursor1.fetchone():
+                        await cursor1.execute("DELETE FROM threads WHERE guild_id = ?", (ctx.guild.id,))
+                        await self.threads.commit()
+                async with self.users.cursor() as cursor2:
+                    await cursor2.execute("SELECT * FROM users WHERE guild_id = ?", (ctx.guild.id,))
+                    if await cursor2.fetchone():
+                        await cursor2.execute("DELETE FROM users WHERE guild_id = ?", (ctx.guild.id,))
+                        await self.users.commit()
                 successful_delete_embed = discord.Embed(title = "🔄 Modmail reset", description="🗑️ The configuration of modmail was successful. The bot will no longer accept any modmails for this server.\n ℹ️ You will be required to delete the thread channels for current threads.However, this will not send the transcript in the logs channel anymore.", color = 0x95bb72)
                 successful_delete_embed.set_footer(text=f"Reset requested by: {ctx.author.name}#{ctx.author.discriminator}")
                 await ctx.respond(embed = successful_delete_embed)
