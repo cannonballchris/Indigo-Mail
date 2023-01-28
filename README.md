@@ -1,6 +1,7 @@
 # Indigo-Mail
 
 Indigo Mail is a free to use discord bot that helps in tickets but with ease of Direct Message of users!
+Indigo Mail currently was made for: Indigo Mail#5716
 
 ## Self Hosting
 To run a clone of this bot,
