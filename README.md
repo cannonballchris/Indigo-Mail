@@ -5,7 +5,7 @@ Indigo Mail is a free to use discord bot that helps in tickets but with ease of 
 ## Self Hosting
 To run a clone of this bot,
 
-Simply download the code as zip. Create a file called .env and in that file add `TOKEN=your bot token here` and save it. Then, run: `pip install -r requirements.txt` and then, `python main.py`.
+Simply download the code as zip. Then run: `pip install -r requirements.txt` and then, `python main.py`.
 
 If you ever run this on a public bot, you are required to give appropriate credits for the same as well.
 
