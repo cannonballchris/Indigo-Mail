@@ -6,6 +6,7 @@ import asyncio
 from discord.commands import Option
 import chat_exporter
 import io
+import json
 class Mail(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -15,6 +16,7 @@ class Mail(commands.Cog):
 		setattr(self, "users", await aiosqlite.connect("./Database/user.db"))
 		setattr(self, "threads", await aiosqlite.connect("./Database/threads.db"))
 		setattr(self, "config", await aiosqlite.connect("./Database/setup.db"))
+		setattr(self, "embed", await aiosqlite.connect("./Database/embed.db"))
 		await asyncio.sleep(2)
 		async with self.users.cursor() as cursor:
 			await cursor.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, guild_id INTEGER, anonymous BOOL)")
@@ -112,9 +114,36 @@ class Mail(commands.Cog):
 									embed.set_footer(text = f"User ID: {message.author.id}")
 									await channel.send(embed = embed)
 									#Send the message to the user
-									embed = discord.Embed(title = ":white_check_mark: Message sent!", description = f"✅ Your message has been sent to {guild.name}.\nℹ️ A support member will be with you shortly!", color = 0xf01e2c)
-									await message.channel.send(embed = embed)
-									return
+									async with self.embed.cursor() as dragger:
+										await dragger.execute("SELECT * FROM embed WHERE guild_id = ?", (guild_id,))
+										embed_info = await dragger.fetchone()
+										if embed_info is None:
+											embed = discord.Embed(title = ":white_check_mark: Message sent!", description = f"✅ Your message has been sent to {guild.name}.\nℹ️ A support member will be with you shortly!", color = 0xf01e2c)
+											await message.channel.send(embed = embed)
+											return
+										else:
+											embed_json = embed_info[1]
+											try:
+												embed = discord.Embed().from_dict(json.loads(embed_json))
+												#Get embed's description if any
+												description = embed.description
+												if description:
+													#Replace the placeholders
+													description = description.replace("{user.name}", message.author.author)
+													description = description.replace("{user.id}", str(message.author.id))
+													description = description.replace("{user.mention}", message.author.mention)
+													description = description.replace("{user.discriminator}", message.author.discriminator)
+												#Get thumbnail
+												thumbnail = embed.thumbnail
+												if thumbnail:
+													#Replace the placeholders
+													thumbnail = thumbnail.replace("{user.avatar}", message.author.avatar.url if message.author.avatar else message.author.default_avatar.url)
+													
+												await message.channel.send(embed = embed)
+											except:
+												embed = discord.Embed(title = ":white_check_mark: Message sent!", description = f"✅ Your message has been sent to {guild.name}.\nℹ️ A support member will be with you shortly!", color = 0xf01e2c)
+												await message.channel.send(embed = embed)
+												return
 								else:
 									channel_id = thread_info[2]
 									channel = self.bot.get_channel(channel_id)
@@ -342,15 +371,6 @@ class Mail(commands.Cog):
 							await ctx.respond("Thread closed.")
 							#Delete the channel
 							await ctx.channel.delete()
-
-
-
-			
-
-
-	# @commands.command()
-	# async def save(self,ctx: commands.Context):
-	# 	await chat_exporter.quick_export(ctx.channel)
 
 def setup(bot):
 	bot.add_cog(Mail(bot))
