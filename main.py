@@ -19,6 +19,7 @@ class IndigoMail(commands.Bot):
                 except Exception as e:
                     print(f"{Fore.RED} ERROR | Failed to load {filename}{Fore.RESET}")
                     print(f"{Fore.RED} REASON | {e}{Fore.RESET}")
+                    
 
     async def on_ready(self):
         print(f"{Fore.GREEN} INFO | Logged in as {self.user.name}#{self.user.discriminator} ({self.user.id}){Fore.RESET}")
