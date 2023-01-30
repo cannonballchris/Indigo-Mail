@@ -64,8 +64,7 @@ class Mail(commands.Cog):
 
 						text_string = ""
 						for guild_id in guild_list:
-							self.bot.get_guild(guild_id)
-							text_string += f"{guild.id} - {guild.name}\n"
+							text_string += f"{guild_id.id} - {guild_id.name}\n"
 						embed = discord.Embed(title = ":wave: Hey there!", description=f":x: Thank you for reaching support channels. However, I see that you have not selected any guild you wish to send your message to.\n :white_check_mark: Please select one of the following guilds you wish to send your message to by using `/choose` command.\n\n `{text_string}`", color = 0xf01e2c)
 						await message.channel.send(embed = embed)
 						return
