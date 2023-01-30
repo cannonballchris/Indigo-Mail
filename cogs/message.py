@@ -318,8 +318,6 @@ class Mail(commands.Cog):
 									#Delete the channel
 									await channel.delete()
 									#Delete the user from the database.
-									await cursor1.execute("DELETE FROM users WHERE user_id = ?", (ctx.author.id,))
-									await self.users.commit()
 		#Else if its a guild channel
 		else:
 			#Check if the channel is a thread channel.
@@ -366,8 +364,6 @@ class Mail(commands.Cog):
 							await cursor.execute("DELETE FROM threads WHERE user_id = ? AND guild_id = ?", (thread_user.id,user_info[1]))
 							await self.threads.commit()
 							#Delete user from the database.
-							await cursor1.execute("DELETE FROM users WHERE user_id = ?", (thread_user.id,))
-							await self.users.commit()
 							await ctx.respond("Thread closed.")
 							#Delete the channel
 							await ctx.channel.delete()
