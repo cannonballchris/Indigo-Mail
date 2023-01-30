@@ -341,6 +341,21 @@ class EmbedBuilder(commands.Cog):
 				embed = discord.Embed().from_dict(info)
 				await ctx.send(embed=embed)
 
+	@embed.command(name = "reset", description = "🖼️ Reset the embed")
+	@commands.has_permissions(manage_guild = True)
+	async def reset(self, ctx):
+		await ctx.defer()
+		async with self.db.cursor() as cursor:
+			await cursor.execute("SELECT * FROM embed WHERE guild_id = ?", (ctx.guild.id,))
+			info = await cursor.fetchone()
+			if not info:
+				embed = discord.Embed(description="❌ There is no embed to reset.",color = 0xFFDBAF)
+				await ctx.respond(embed=embed)
+			else:
+				await cursor.execute("DELETE FROM embed WHERE guild_id = ?", (ctx.guild.id,))
+				await self.db.commit()
+				embed = discord.Embed(description="👍 Okay, I have reset the embed.",color = 0xFFDBAF)
+				await ctx.respond(embed=embed)
 		
 
 
