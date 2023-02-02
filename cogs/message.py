@@ -148,8 +148,9 @@ class Mail(commands.Cog):
 									channel = self.bot.get_channel(channel_id)
 									if channel is None:
 										return
+									
 									embed = discord.Embed(title = f"✉️ New message from {message.author.name}", description = message.content, color = 0xf01e2c)
-									embed.set_footer(text = f"User ID: {message.author.id}")
+									embed.set_footer(text = f"User ID: {message.author.id}", icon_url=message.author.avatar.url if message.author.avatar else message.author.default_avatar.url)
 									await channel.send(embed = embed)
 									embed = discord.Embed(title = ":white_check_mark: Message sent!", description = f"✅ Your message has been sent to {guild.name}.", color = 0xf01e2c)
 									await message.channel.send(embed = embed)
@@ -173,14 +174,14 @@ class Mail(commands.Cog):
 							if anonymity == 1:
 								embed = discord.Embed(title = f"✉️ New message from {message.guild.name}", description = message.content, color = 0xEFD033, timestamp = datetime.datetime.utcnow())
 								await user.send(embed = embed)
-								embed = discord.Embed(description = f"✅ Your message has been sent to {user.name}.", color = 0xf01e2c)
-								await message.channel.send(embed = embed)
+								#Add reaction to message
+								await message.add_reaction("✔️")
 								return
 					embed = discord.Embed(title = f"✉️ New message from {message.guild.name}", description = message.content, color = 0xEFD033, timestamp = datetime.datetime.utcnow())
 					embed.set_author(name = f"{message.author.name}#{message.author.discriminator}", icon_url = message.author.avatar.url if message.author.avatar else message.author.default_avatar.url)
 					await user.send(embed = embed)
-					embed = discord.Embed(description = f"✅ Your message has been sent to {user.name}.", color = 0xf01e2c)
-					await message.channel.send(embed = embed)
+					#Add reaction to message
+					await message.add_reaction("✅")
 					return
 
 
