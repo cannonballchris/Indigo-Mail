@@ -128,7 +128,7 @@ class Mail(commands.Cog):
 												description = embed.description
 												if description:
 													#Replace the placeholders
-													description = description.replace("{user.name}", message.author.author)
+													description = description.replace("{user.name}", message.author.name)
 													description = description.replace("{user.id}", str(message.author.id))
 													description = description.replace("{user.mention}", message.author.mention)
 													description = description.replace("{user.discriminator}", message.author.discriminator)
